@@ -10,7 +10,7 @@ from collections import deque
 
 class MethodNotImplemented(Exception):
     def __init__(self, *args):
-        super(NotImplemented, self).__init__("This method is not implemented yet!")
+        super(MethodNotImplemented, self).__init__("This method is not implemented yet!")
 
 
 class RingBuffIsEmpty(Exception):
