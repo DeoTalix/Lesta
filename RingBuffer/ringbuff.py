@@ -1,11 +1,12 @@
-#!RingBuffer/venv/bin/python
 import sys
 if sys.version.startswith("2.7") != True:
     raise Exception(
         "This file has no support for python version ({}). Supported version is 2.7 only."
         .format(sys.version))
 
+from abc import ABCMeta, abstractmethod
 from collections import deque
+
 
 
 class MethodNotImplemented(Exception):
@@ -26,10 +27,11 @@ class RingBuffOverflow(Exception):
 class RingBuffInvalidMaxsize(Exception):
     def __init__(self, message, *args):
         message = "Invalid maxsize for RingBuff. " + message
-        super(RingBuffInvalidMaxsize, self).__init__(message, *args)
+        super(RingBuffInvalidMaxsize, self).__init__(message)
 
 
-class RingBuffTemplate(object):
+class RingBuffTemplate:
+    __metaclass__ = ABCMeta
     __slots__ = ("_maxsize", "_size", "_overwritable", "_resolve_overflow")
 
     def __init__(self, maxsize, overwritable=False):
@@ -52,6 +54,7 @@ class RingBuffTemplate(object):
     def __repr__(self):
         return "RingBuff({})".format(self.__str__())
 
+    @abstractmethod
     def put(self, value):
         """
         Checks if buffer is full.
@@ -68,6 +71,7 @@ class RingBuffTemplate(object):
         if self.isfull:
             self._resolve_overflow()
     
+    @abstractmethod
     def _resolve_overflow(self, *args):
         """
         Method is replaced on instance initialization.
@@ -79,6 +83,7 @@ class RingBuffTemplate(object):
     def _raise_overflow(self):
         raise RingBuffOverflow()
 
+    @abstractmethod
     def get(self):
         """
         Checks if buffer is empty.
@@ -181,4 +186,5 @@ class RingBuffList(RingBuffTemplate):
             "tail": self._tail,
         })
         return st
+
 
