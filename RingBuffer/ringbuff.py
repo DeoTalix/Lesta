@@ -36,7 +36,7 @@ class RingBuffTemplate:
 
     def __init__(self, maxsize, overwritable=False):
         self._maxsize = self._check_maxsize(maxsize)
-        self._size = 0
+
         self._overwritable = bool(overwritable)
         if self._overwritable == True:
             self._resolve_overflow = self.get
@@ -144,8 +144,10 @@ class RingBuffQueue(RingBuffTemplate):
         self._q.append(value)
 
     def get(self):
-        super(RingBuffQueue, self).get()
-        return self._q.popleft()
+        try:
+            return self._q.popleft()
+        except IndexError:
+            raise RingBuffIsEmpty()
 
     @property
     def isempty(self):
@@ -157,11 +159,12 @@ class RingBuffQueue(RingBuffTemplate):
 
 
 class RingBuffList(RingBuffTemplate):
-    __slots__ = RingBuffTemplate.__slots__ + ("_head", "_tail", "_q")
+    __slots__ = RingBuffTemplate.__slots__ + ("_size", "_head", "_tail", "_q")
 
     def __init__(self, maxsize, overwritable=False):
         super(RingBuffList, self).__init__(maxsize, overwritable)
         self._q = [None] * self._maxsize
+        self._size = 0
         self._head = 0
         self._tail = 0
 
@@ -186,5 +189,3 @@ class RingBuffList(RingBuffTemplate):
             "tail": self._tail,
         })
         return st
-
-

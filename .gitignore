@@ -1,5 +1,11 @@
 __pycache__/
+build/
+other/
 venv/
+.*
 *.pyc
 *.o
+*.c
 *.so
+*.ipynb
+gen.py

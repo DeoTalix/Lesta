@@ -52,7 +52,7 @@ class RingBuffQueueGeneral(unittest.TestCase):
         self.assertEqual(result, [1, 2, 3])
 
 
-class RingBuffQueueThreading(unittest.TestCase):
+class RingBuffQueueThreadingWithLock(unittest.TestCase):
     def setUp(self):
         self.RingBuff = RingBuffQueue
         self.run_setup()
@@ -75,7 +75,7 @@ class RingBuffQueueThreading(unittest.TestCase):
             if i < 3:
                 th = Thread(
                     target = self.thread_put,
-                    args = (i, buff, lock, c_get, c_inc, self.limit))
+                    args = (i, buff, lock, c_inc, self.limit))
             else:
                 th = Thread(
                     target = self.thread_get,
@@ -116,11 +116,11 @@ class RingBuffQueueThreading(unittest.TestCase):
         Simulates value intensive processing.
         """
         n = randint(1, 10) / 100.
-        sleep(n)
+        #sleep(n)
         return value
 
 
-    def thread_put(self, id, buff, lock, c_get, c_inc, limit):
+    def thread_put(self, id, buff, lock, c_inc, limit):
         """
         Fills buff with values obtained from c_inc until limit is reached.
         """
@@ -136,7 +136,7 @@ class RingBuffQueueThreading(unittest.TestCase):
                 except RingBuffOverflow:
                     pass
 
-            if i >= self.limit:
+            if i >= limit:
                 break
         return
 
@@ -173,8 +173,6 @@ class RingBuffQueueThreading(unittest.TestCase):
         self.assertEqual(len(self.result), len(set(self.result)))
 
 
-
-
 # TEST CASES FOR RING BUFF LIST
 
 class RingBuffListGeneral(RingBuffQueueGeneral):
@@ -182,13 +180,12 @@ class RingBuffListGeneral(RingBuffQueueGeneral):
         self.RingBuff = RingBuffList
 
 
-class RingBuffListThreading(RingBuffQueueThreading):
+class RingBuffListThreadingWithLock(RingBuffQueueThreadingWithLock):
     def setUp(self):
         self.RingBuff = RingBuffList
         self.run_setup()
 
-
-
+        
 
 
 if __name__ == '__main__':
